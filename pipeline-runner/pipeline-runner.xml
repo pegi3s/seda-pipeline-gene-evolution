@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<runners xmlns="http://sing-group.org/compi/runners-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<runner tasks="extract_files">
+		/bin/sh -c "${task_code}"
+	</runner>
+	<runner tasks="replace_1">
+		/bin/sh -c "${task_code}"
+	</runner>
+	<runner tasks="replace_2">
+		/bin/sh -c "${task_code}"
+	</runner>
+	<runner tasks="cleanup">
+		/bin/sh -c "${task_code}"
+	</runner>
+	<runner tasks="final_functional">
+		/bin/sh -c "${task_code}"
+	</runner>
+	<runner tasks="final_functional_and_errors">
+		/bin/sh -c "${task_code}"
+	</runner>
+	<runner tasks="final_pseudogenes">
+		/bin/sh -c "${task_code}"
+	</runner>
+	<runner tasks="label_reference">
+		/bin/sh -c "${task_code}"
+	</runner>
+	<runner tasks="blast_merge">
+		/bin/sh -c "${task_code}"
+	</runner>
+	<runner>
+		${script_pipeline_runner}
+	</runner>
+</runners>
+
+
+

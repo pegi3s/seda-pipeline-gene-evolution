@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<pipeline xmlns="http://www.sing-group.org/compi/pipeline-1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<version>0.1.0</version>
+
+	<params>
+		<param name="workingDirectory" shortName="wd" global="true"></param>
+
+		<param name="input" shortName="i" global="true" defaultValue="input"></param>
+		<param name="output" shortName="o" global="true" defaultValue="output"></param>
+		<param name="paramsDir" shortName="pd" global="true" defaultValue="params"></param>
+
+		<!-- Custom batch sizes for tasks. If not specified, all files are processed at the same time (i.e. only
+			one SEDA command is executed). -->
+		<!-- If a task/command name contains "-", this character must be replaced with "_" when creating a "batchSize_" parameter -->
+		<param name="batchSize_getorf" shortName="bsgorf" defaultValue="4"></param>
+		<param name="batchSize_blast_1" shortName="bsb1" defaultValue="4"></param>
+		<param name="batchSize_prosplign_procompart" shortName="bspp" defaultValue="4"></param>
+		<param name="batchSize_remove_redundant_1" shortName="bsrr1" defaultValue="4"></param>
+		<param name="batchSize_remove_redundant_2" shortName="bsrr2" defaultValue="4"></param>
+		<param name="batchSize_reformat_1" shortName="bsr1" defaultValue="4"></param>
+		
+		
+		<param name="batchSize_rename_ncbi_1" shortName="bsrncbi1" defaultValue="4"></param>
+		<param name="batchSize_rename_ncbi_2" shortName="bsrncbi2" defaultValue="4"></param>
+		<param name="batchSize_rename_header_multipart_1" shortName="bsrhm1" defaultValue="4"></param>
+		<param name="batchSize_rename_header_multipart_2" shortName="bsrhm2" defaultValue="4"></param>	
+
+		<!-- Paths to scripts required by the pipeline runner XML -->
+		<param name="script_pipeline_runner" shortName="spr" global="true" defaultValue="pipeline-runner.sh"></param>
+		<param name="sedaCli" shortName="sc" global="true" defaultValue="run-cli.sh"></param>
+		<param name="script_create_batches" shortName="scb" global="true" defaultValue="create_batches"></param>
+	</params>
+
+	<tasks>
+	<!-- initial-task is not a SEDA command and thus uses "src" to specify the path to the bash script that must
+        be executed. -->	
+		<task id="extract_files" src="task-scripts/extract_files.sh"/>
+		<task id="getorf" after="extract_files" params="batchSize_getorf"/>
+		<task id="blast_1" after="getorf" params="batchSize_blast_1"/>
+		<task id="remove-redundant_1" after="blast_1" params="batchSize_remove_redundant_1"/>		
+		<task id="reformat_1" after="remove-redundant_1" params="batchSize_reformat_1"/>		
+		<task id="rename-ncbi_1" after="reformat_1" params="batchSize_rename_ncbi_1"/>
+		<task id="replace_1" after="rename-ncbi_1" src="task-scripts/replace_1.sh"/>
+		<task id="rename-header-multipart_1" after="replace_1" params="batchSize_rename_header_multipart_1"/>
+		<task id="blast_merge" after="rename-header-multipart_1" src="task-scripts/blast_merge.sh"/>
+
+		<task id="prosplign-procompart" after="extract_files" params="batchSize_prosplign_procompart"/>
+		<task id="remove-redundant_2" after="prosplign-procompart" params="batchSize_remove_redundant_2"/>
+		<task id="replace_2" after="remove-redundant_2" src="task-scripts/replace_2.sh"/>	
+		<task id="rename-ncbi_2" after="replace_2" params="batchSize_rename_ncbi_2"/>
+		<task id="rename-header-multipart_2" after="rename-ncbi_2" params="batchSize_rename_header_multipart_2"/>
+		<task id="merge_2" after="rename-header-multipart_2"/>
+		<task id="reformat_2" after="merge_2"/>
+		<task id="filtering_1" after="reformat_2"/>
+              	<task id="filtering_2" after="reformat_2"/>
+              	<task id="filtering_3" after="reformat_2"/>
+              	<task id="final_functional" after="filtering_1" src="task-scripts/final_functional.sh"/>
+              	<task id="final_functional_and_errors" after="filtering_2" src="task-scripts/final_functional_and_errors.sh"/>
+              	<task id="final_pseudogenes" after="filtering_3" src="task-scripts/final_pseudogenes.sh"/>
+              	<task id="label_reference" after="final_functional final_functional_and_errors final_pseudogenes blast_merge" src="task-scripts/label_reference.sh"/>
+              	
+              	<task id="cleanup" after="label_reference" src="task-scripts/cleanup.sh"/>  	
+		
+	</tasks>
+</pipeline>
