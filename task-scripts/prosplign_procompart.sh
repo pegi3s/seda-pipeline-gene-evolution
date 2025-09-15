@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ -d "${workingDirectory}/${output}/${task_id}/${accession}/prosplign-procompart" ]; then
+	echo "Output directory for getorf already exists. Skipping execution to avoid overwriting existing data."
+	exit 0
+fi
+
+. ${scriptsDir}/functions.sh
+
+message "Running ${task_id} for accession ${accession}"
+
+# Run prosplign-procompart
+SEDA_OPERATION_NAME="prosplign-procompart"
+INPUT_FILE=$(ls ${workingDirectory}/${output}/download-genomes/${accession}/ncbi_dataset/data/${accession}/* | head -1)
+OUTPUT=${workingDirectory}/${output}/${task_id}/${accession}/prosplign-procompart
+PARAMS=$(get_params "prosplign-procompart")
+run_seda "${SEDA_OPERATION_NAME}" "${INPUT_FILE}" "${OUTPUT}" "${PARAMS}"
+
+mkdir -p ${workingDirectory}/${input}/lists
+ls -1 ${OUTPUT}/* >> ${workingDirectory}/${input}/lists/remove-redundant_2.txt

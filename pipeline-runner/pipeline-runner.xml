@@ -1,6 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <runners xmlns="http://sing-group.org/compi/runners-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<runner tasks="extract_files, replace_1, replace_2, cleanup, final_functional, final_functional_and_errors, final_pseudogenes, label_reference, blast_merge">
+	<runner tasks="download_genomes"><![CDATA[
+		echo "[runner ${task_id}] [max_tasks is ${max_tasks}]"
+
+		compipid=$(ps -o ppid= $$ | tr -d ' ')
+		process_start_time=$(ps -o lstart= -p $compipid)
+		process_start_time_epoch=$(date -d "$process_start_time" +%s)
+		uniqid=${process_start_time_epoch}_${compipid}
+		
+		lock_file="/tmp/lock-file-${uniqid}"
+		touch ${lock_file}
+
+		slot_available=$(mktemp -t slot-file-${task_id}-${accession}.XXXXXXXXXX)
+
+		while [ ! -s ${slot_available} ]; do
+			sleep ${sleep_time:=0}
+
+			( flock 99
+			count=$(cat ${lock_file})
+			count=${count:-0}
+
+			if [ ${count} -lt ${max_tasks} ]; then
+				echo $((count+1)) > ${lock_file}
+				echo $((count+1)) > ${slot_available}
+			fi
+			) 99<"$lock_file"
+
+			sleep_time=5
+		done
+			
+		echo "Got a ticket for ${accession}"
+
+		/bin/sh -c "${task_code}"
+	]]>
+	</runner>
+	<runner tasks="remove_genomes"><![CDATA[
+		compipid=$(ps -o ppid= $$ | tr -d ' ')
+		process_start_time=$(ps -o lstart= -p $compipid)
+		process_start_time_epoch=$(date -d "$process_start_time" +%s)
+		uniqid=${process_start_time_epoch}_${compipid}
+		
+		lock_file="/tmp/lock-file-${uniqid}"
+		touch ${lock_file}
+
+		/bin/sh -c "${task_code}"
+
+		( flock 99
+			count=$(cat ${lock_file})
+			echo $((count-1)) > ${lock_file}
+		) 99<"$lock_file"
+   	]]>
+	</runner>
+	<runner tasks="extract_files, replace_1, replace_2, cleanup, final_functional, final_functional_and_errors, final_pseudogenes, label_reference, blast_merge, getorf_and_blast, prosplign_procompart">
 		/bin/sh -c "${task_code}"
 	</runner>
 	<runner>
