@@ -1,4 +1,4 @@
 #
 #Mon Fev 12 11:20:54 CET 2025
 compi.version=1.5.2
-image.name=pegi3s/gene-evolution:v1
+image.name=pegi3s/gene-evolution
