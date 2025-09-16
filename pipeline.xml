@@ -35,6 +35,8 @@
 		<!-- Additional parameters -->
 		<param name="max_tasks" shortName="mt" global="true" defaultValue="1"></param>
 		<flag name="skip_cleanup" shortName="sdc" global="true">Use this flag to skip the cleanup task.</flag>
+		<param name="docker_images_list" shortName="dil" defaultValue="/docker_images_list.txt">Path to a text file containing a list of Docker images to be pulled before running the pipeline.</param>
+		<param name="ncbi_datasets_docker_image" shortName="ncbi_datasets_docker_image" defaultValue="pegi3s/ncbi-datasets:18.7.0" global="true">The Trimmomatic Docker image to use.</param>
 	</params>
 
 	<tasks>
@@ -42,10 +44,16 @@
 			Start 1: download genomes from accessions list and remove genome data before
 		 	getORF/BLAST or ProSplign-ProCompart
 		-->
+		<task id="pull_docker_images"
+			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
+			src="task-scripts/pull_docker_images.sh"
+			params="docker_images_list"
+		/>
 		<foreach id="download_genomes"
 			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
 			of="command" in="cat ${workingDirectory}/input/accessions_list.txt" as="accession" 
-			src="task-scripts/download-genomes.sh"
+			src="task-scripts/download_genomes.sh"
+			after="pull_docker_images"
 		/>
 		<foreach id="getorf_and_blast"
 			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
@@ -62,7 +70,7 @@
 		<foreach id="remove_genomes"
 			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
 			of="command" in="cat ${workingDirectory}/input/accessions_list.txt" as="accession" 
-			src="task-scripts/remove-genomes.sh"
+			src="task-scripts/remove_genomes.sh"
 			after="*getorf_and_blast,*prosplign_procompart"
 		/>
 
