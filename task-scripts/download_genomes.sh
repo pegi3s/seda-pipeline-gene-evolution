@@ -28,12 +28,16 @@ while [ $attempt -le $max_retries ]; do
                     --assembly-version latest \
                     --filename ${zip_file}
     
-    # Check if the zip file was successfully created
-    if [ -f "$zip_file" ] && [ -s "$zip_file" ]; then
-        echo "Successfully downloaded ${accession}.zip on attempt $attempt"
+    # Check if the zip file was successfully created and is valid
+    if [ -f "$zip_file" ] && [ -s "$zip_file" ] && unzip -t "$zip_file" >/dev/null 2>&1; then
+        echo "Successfully downloaded and verified ${accession}.zip on attempt $attempt"
         break
     else
-        echo "Download failed on attempt $attempt. File not created or is empty."
+        if [ -f "$zip_file" ]; then
+            echo "Download failed on attempt $attempt. File exists but is corrupted or incomplete."
+        else
+            echo "Download failed on attempt $attempt. File not created or is empty."
+        fi
         if [ $attempt -eq $max_retries ]; then
             echo "ERROR: Failed to download ${accession}.zip after $max_retries attempts"
             exit 1
@@ -49,6 +53,15 @@ if unzip -q "$zip_file" -d ${workingDirectory}/output/download-genomes/${accessi
     echo "Successfully extracted ${accession}.zip"
     rm "$zip_file"
     echo "Genome download and extraction completed successfully for accession ${accession}"
+
+    # Extract filenames
+    for file in $(find ${workingDirectory}/output/download-genomes/${accession}/ -name "*fna"); do
+        filename=$(basename "$file")
+
+        # Extract the pattern (GCF/GCA followed by numbers)
+        match=$(echo "$filename" | sed -n 's/.*\(GCF_[0-9]\+\(\.[0-9]\+\)\?\|GCA_[0-9]\+\(\.[0-9]\+\)\?\).*/\1/p')
+        sed -i "/>/ s/>/>${match}_/g" "${file}"
+    done
     exit 0
 else
     echo "ERROR: Failed to extract ${accession}.zip"
