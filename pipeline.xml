@@ -36,6 +36,7 @@
 		<param name="max_tasks" shortName="mt" global="true" defaultValue="1"></param>
 		<param name="max_download_retries" shortName="mdr" defaultValue="3">Maximum number of download retries for genome datasets.</param>
 		<flag name="skip_cleanup" shortName="sdc" global="true">Use this flag to skip the cleanup task.</flag>
+		<flag name="skip_prosplign_procompart" shortName="spspc" global="true">Use this flag to skip the ProSplign-ProCompart branch.</flag>
 		<param name="ncbi_datasets_docker_image" shortName="ncbi_datasets_docker_image" defaultValue="pegi3s/ncbi-datasets:18.7.0" global="true">The Trimmomatic Docker image to use.</param>
 	</params>
 
@@ -62,7 +63,7 @@
 			after="*download_genomes"
 		/>
 		<foreach id="prosplign_procompart"
-			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
+			if="[ -f ${workingDirectory}/input/accessions_list.txt ] && [ -v ${skip_prosplign_procompart} ]"
 			of="command" in="cat ${workingDirectory}/input/accessions_list.txt" as="accession" 
 			src="task-scripts/prosplign_procompart.sh"
 			after="*download_genomes"
@@ -79,15 +80,15 @@
 		 	getORF/BLAST or ProSplign-ProCompart
 		-->
 		<task id="extract_files"
-			if="[ ! -f ${workingDirectory}/input/accessions_list.txt ]"
+			if="[ ! -f ${workingDirectory}/input/accessions_list.txt ] && [ -v ${skip_prosplign_procompart} ]"
 			src="task-scripts/extract_files.sh"
 		/>
 		<task id="getorf"
-			if="[ ! -f ${workingDirectory}/input/accessions_list.txt ]"
+			if="[ ! -f ${workingDirectory}/input/accessions_list.txt ] && [ -v ${skip_prosplign_procompart} ]"
 			after="extract_files" params="batchSize_getorf"
 		/>
 		<task id="blast_1"
-			if="[ ! -f ${workingDirectory}/input/accessions_list.txt ]"
+			if="[ ! -f ${workingDirectory}/input/accessions_list.txt ] && [ -v ${skip_prosplign_procompart} ]"
 			after="getorf" params="batchSize_blast_1"
 		/>
 		<task id="prosplign-procompart"
@@ -104,22 +105,36 @@
 		<task id="blast_merge" after="rename-header-multipart_1" src="task-scripts/blast_merge.sh"/>
 
 		<!-- ProSplign-ProCompart branch -->
-		<task id="remove-redundant_2" after="prosplign-procompart, remove_genomes" params="batchSize_remove_redundant_2"/>
-		<task id="replace_2" after="remove-redundant_2" src="task-scripts/replace_2.sh"/>	
-		<task id="rename-ncbi_2" after="replace_2" params="batchSize_rename_ncbi_2"/>
-		<task id="rename-header-multipart_2" after="rename-ncbi_2" params="batchSize_rename_header_multipart_2"/>
-		<task id="merge_2" after="rename-header-multipart_2"/>
-		<task id="replace_3" after="merge_2" src="task-scripts/replace_3.sh"/>
-		<task id="reformat_2" after="replace_3"/>
-		<task id="filtering_1" after="reformat_2"/>
-		<task id="filtering_2" after="reformat_2"/>
-		<task id="filtering_3" after="reformat_2"/>
-		<task id="final_functional" after="filtering_1" src="task-scripts/final_functional.sh"/>
-		<task id="final_functional_and_errors" after="filtering_2" src="task-scripts/final_functional_and_errors.sh"/>
-		<task id="final_pseudogenes" after="filtering_3" src="task-scripts/final_pseudogenes.sh"/>
+		<task id="remove-redundant_2" after="prosplign-procompart, remove_genomes"
+			if="[ -v ${skip_prosplign_procompart} ]" params="batchSize_remove_redundant_2"/>
+		<task id="replace_2" after="remove-redundant_2"
+			if="[ -v ${skip_prosplign_procompart} ]" src="task-scripts/replace_2.sh"/>	
+		<task id="rename-ncbi_2" after="replace_2"
+			if="[ -v ${skip_prosplign_procompart} ]" params="batchSize_rename_ncbi_2"/>
+		<task id="rename-header-multipart_2" after="rename-ncbi_2"
+			if="[ -v ${skip_prosplign_procompart} ]" params="batchSize_rename_header_multipart_2"/>
+		<task id="merge_2" after="rename-header-multipart_2"
+			if="[ -v ${skip_prosplign_procompart} ]"/>
+		<task id="replace_3" after="merge_2"
+			if="[ -v ${skip_prosplign_procompart} ]" src="task-scripts/replace_3.sh"/>
+		<task id="reformat_2" after="replace_3"
+			if="[ -v ${skip_prosplign_procompart} ]"/>
+		<task id="filtering_1" after="reformat_2"
+			if="[ -v ${skip_prosplign_procompart} ]"/>
+		<task id="filtering_2" after="reformat_2"
+			if="[ -v ${skip_prosplign_procompart} ]"/>
+		<task id="filtering_3" after="reformat_2"
+			if="[ -v ${skip_prosplign_procompart} ]"/>
+		<task id="final_functional" after="filtering_1"
+			if="[ -v ${skip_prosplign_procompart} ]" src="task-scripts/final_functional.sh"/>
+		<task id="final_functional_and_errors" after="filtering_2"
+			if="[ -v ${skip_prosplign_procompart} ]" src="task-scripts/final_functional_and_errors.sh"/>
+		<task id="final_pseudogenes" after="filtering_3"
+			if="[ -v ${skip_prosplign_procompart} ]" src="task-scripts/final_pseudogenes.sh"/>
 
 		<!-- Final tasks -->
-		<task id="label_reference" after="final_functional final_functional_and_errors final_pseudogenes blast_merge" src="task-scripts/label_reference.sh"/>
+		<task id="label_reference" after="final_functional final_functional_and_errors final_pseudogenes blast_merge"
+			if="[ -v ${skip_prosplign_procompart} ]" src="task-scripts/label_reference.sh"/>
 		<task id="cleanup" 
 			if="[ -v ${skip_cleanup} ]"
 			after="label_reference" src="task-scripts/cleanup.sh"
