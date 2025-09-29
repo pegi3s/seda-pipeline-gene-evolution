@@ -12,10 +12,12 @@ A Docker image is available for this pipeline in [this Docker Hub repository](ht
     - [Input data](#input-data)
     - [`query` and `query1`](#query-and-query1)
 - [Running the pipeline with sample data](#running-the-pipeline-with-sample-data)
-  - [Additional Compi execution parameters](#additional-compi-execution-parameters)
+- [Advanced options](#advanced-options)
+  - [Compi execution parameters](#compi-execution-parameters)
     - [Run a single task with 2 maximum parallel executions](#run-a-single-task-with-2-maximum-parallel-executions)
     - [Partial execution between two tasks](#partial-execution-between-two-tasks)
-    - [Controlling genome downloads](#controlling-genome-downloads)
+  - [Skipping the ProSplign-ProCompart branch](#skipping-the-prosplign-procompart-branch)
+  - [Controlling genome downloads](#controlling-genome-downloads)
 - [Publications](#publications)
 
 ## Pipeline overview
@@ -23,6 +25,8 @@ A Docker image is available for this pipeline in [this Docker Hub repository](ht
 The image below shows an overview of the pipeline. It is important to note that there are two alternative  ways of starting the pipeline and reach the two main branches:
 - Green: Through `extract_files` starting with a set of downloaded files located at the input directory as explained below.
 - Blue: Through `download_genomes`, starting with a list of accessions located at the input file especified below. This alternative is aimed at reducing disk space as genomes are removed from disk after being analyzed by `getorf_and_blast` and `prosplign_procompart`.
+
+Also, note that the ProSplign-ProCompart branch (starting either in `prosplign_procompart` or `prosplign-procompart`), is executed by default but it can be disbled as explained before.
 
 ![pipeline](pipeline.png)
 
@@ -96,7 +100,9 @@ It is possible to test the pipeline using our sample data available [here](). Do
 
 Pipeline results will be created in a directory called `results` inside the working directory and intermediate files will be stored at `output`.
 
-### Additional Compi execution parameters
+## Advanced options
+
+### Compi execution parameters
 
 The pipeline execution can be customized (e.g. setting the maximum number of parallel tasks, partial executions, and so on) by providing an additional parameter to the `run.sh` script. Below are some examples:
 
@@ -112,7 +118,11 @@ The pipeline execution can be customized (e.g. setting the maximum number of par
 ./run.sh /path/to/working-directory/compi.params "--from getorf --until blast_merge"
 ```
 
-#### Controlling genome downloads
+### Skipping the ProSplign-ProCompart branch
+
+The ProSplign-ProCompart branch is executed by default but the execution fo its associated tasks can be ommited by including the `skip_prosplign_procompart` flag in the `compi.params` file.
+
+### Controlling genome downloads
 
 As explained earlier, the `download_genomes` task is designed to save disk space by removing genomes after they are analyzed by `getorf_and_blast` and `prosplign_procompart`. The task starts with a list of accessions located at `input/accessions_list.txt`.
 
