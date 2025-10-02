@@ -133,14 +133,9 @@
 			if="[ -v ${skip_prosplign_procompart} ]" src="task-scripts/final_pseudogenes.sh"/>
 
 		<!-- Final tasks -->
-		<task id="label_reference" after="final_functional final_functional_and_errors final_pseudogenes blast_merge"
+		<task id="label_reference"
+			after="final_functional final_functional_and_errors final_pseudogenes blast_merge"
 			if="[ -v ${skip_prosplign_procompart} ]" src="task-scripts/label_reference.sh"/>
-		<task id="cleanup" 
-			if="[ -v ${skip_cleanup} ]"
-			after="label_reference" src="task-scripts/cleanup.sh"
-		/>
-		<task id="cleanup_temporary_files" 
-			after="label_reference" src="task-scripts/cleanup_temporary_files.sh"
-		/>
+		<task id="cleanup" after="label_reference" src="task-scripts/cleanup.sh"/>
 	</tasks>
 </pipeline>

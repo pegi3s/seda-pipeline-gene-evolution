@@ -51,10 +51,10 @@
 		) 99<"$lock_file"
    	]]>
 	</runner>
-	<runner tasks="extract_files, replace_1, replace_2, replace_3, cleanup, cleanup_temporary_files, final_functional, final_functional_and_errors, final_pseudogenes, label_reference, blast_merge, getorf_and_blast, prosplign_procompart">
+	<runner tasks="extract_files, replace_1, replace_2, replace_3, final_functional, final_functional_and_errors, final_pseudogenes, label_reference, blast_merge, getorf_and_blast, prosplign_procompart">
 		/bin/sh -c "${task_code}"
 	</runner>
-	<runner tasks="pull_docker_images">
+	<runner tasks="pull_docker_images, cleanup">
 		/bin/bash -c "${task_code}"
 	</runner>
 	<runner>
