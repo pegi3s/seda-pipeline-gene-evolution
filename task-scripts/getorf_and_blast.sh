@@ -5,6 +5,11 @@ if [ -d "${workingDirectory}/${output}/${task_id}/${accession}/getorf" ]; then
 	exit 0
 fi
 
+if [ ! -d "${workingDirectory}/${output}/download-genomes/${accession}/ncbi_dataset/data/${accession}" ]; then
+	echo "ERROR: Genome data for accession ${accession} not found. Please run the download_genomes task first or check error logs."
+	exit 0
+fi
+
 . ${scriptsDir}/functions.sh
 
 message "Running ${task_id} for accession ${accession}"

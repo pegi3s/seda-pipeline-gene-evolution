@@ -40,7 +40,9 @@ while [ $attempt -le $max_retries ]; do
         fi
         if [ $attempt -eq $max_retries ]; then
             echo "ERROR: Failed to download ${accession}.zip after $max_retries attempts"
-            exit 1
+            echo ${accession} >> ${workingDirectory}/output/download-genomes/failed_downloads.txt
+            rm -rf ${workingDirectory}/output/download-genomes/${accession}
+            exit 0
         fi
         attempt=$((attempt + 1))
         echo "Retrying download in 60 seconds..."

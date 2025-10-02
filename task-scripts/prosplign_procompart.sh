@@ -1,7 +1,12 @@
 #!/bin/bash
 
 if [ -d "${workingDirectory}/${output}/${task_id}/${accession}/prosplign-procompart" ]; then
-	echo "Output directory for getorf already exists. Skipping execution to avoid overwriting existing data."
+	echo "Output directory for prosplign-procompart already exists. Skipping execution to avoid overwriting existing data."
+	exit 0
+fi
+
+if [ ! -d "${workingDirectory}/${output}/download-genomes/${accession}/ncbi_dataset/data/${accession}" ]; then
+	echo "ERROR: Genome data for accession ${accession} not found. Please run the download_genomes task first or check error logs."
 	exit 0
 fi
 
