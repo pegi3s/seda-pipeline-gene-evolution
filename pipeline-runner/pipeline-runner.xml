@@ -54,7 +54,7 @@
 	<runner tasks="extract_files, replace_1, replace_2, replace_3, final_functional, final_functional_and_errors, final_pseudogenes, label_reference, blast_merge, getorf_and_blast, prosplign_procompart">
 		/bin/sh -c "${task_code}"
 	</runner>
-	<runner tasks="pull_docker_images, cleanup">
+	<runner tasks="pull_docker_images, cleanup, check_failed_downloads">
 		/bin/bash -c "${task_code}"
 	</runner>
 	<runner>

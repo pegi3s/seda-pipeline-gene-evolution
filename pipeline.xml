@@ -74,6 +74,11 @@
 			src="task-scripts/remove_genomes.sh"
 			after="*getorf_and_blast,*prosplign_procompart"
 		/>
+		<task id="check_failed_downloads"
+			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
+			after="remove_genomes"
+			src="task-scripts/check_failed_downloads.sh"
+		/>
 
 		<!-- 
 			Start 2: providing a set of files in input directory, directly process them with
@@ -97,7 +102,7 @@
 		/>
 
 		<!-- BLAST branch -->
-		<task id="remove-redundant_1" after="blast_1, remove_genomes" params="batchSize_remove_redundant_1"/>		
+		<task id="remove-redundant_1" after="blast_1, check_failed_downloads" params="batchSize_remove_redundant_1"/>		
 		<task id="reformat_1" after="remove-redundant_1" params="batchSize_reformat_1"/>		
 		<task id="rename-ncbi_1" after="reformat_1" params="batchSize_rename_ncbi_1"/>
 		<task id="replace_1" after="rename-ncbi_1" src="task-scripts/replace_1.sh"/>
@@ -105,7 +110,7 @@
 		<task id="blast_merge" after="rename-header-multipart_1" src="task-scripts/blast_merge.sh"/>
 
 		<!-- ProSplign-ProCompart branch -->
-		<task id="remove-redundant_2" after="prosplign-procompart, remove_genomes"
+		<task id="remove-redundant_2" after="prosplign-procompart, check_failed_downloads"
 			if="[ -v ${skip_prosplign_procompart} ]" params="batchSize_remove_redundant_2"/>
 		<task id="replace_2" after="remove-redundant_2"
 			if="[ -v ${skip_prosplign_procompart} ]" src="task-scripts/replace_2.sh"/>	
