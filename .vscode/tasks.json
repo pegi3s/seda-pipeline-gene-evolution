@@ -9,7 +9,7 @@
         {
             "label": "export graph",
             "type": "shell",
-            "command": "compi export-graph -o pipeline.png --line-width 2 --task-colors 'pull_docker_images:279FF5;download_genomes:279FF5;getorf_and_blast:279FF5;prosplign_procompart:279FF5;remove_genomes:279FF5;extract_files:27F554;getorf:27F554;blast_1:27F554;prosplign-procompart:27F554'"
+            "command": "compi export-graph -o pipeline.png --line-width 2 --task-colors 'pull_docker_images:279FF5;download_genomes:279FF5;getorf_and_blast:279FF5;prosplign_procompart:279FF5;remove_genomes:279FF5;check_failed_downloads:279FF5;extract_files:27F554;getorf:27F554;blast_1:27F554;prosplign-procompart:27F554'"
         }
     ]
 }
