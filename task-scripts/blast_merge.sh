@@ -1,6 +1,6 @@
 # Set the working directory
-BLAST_DIR_INPUT="${workingDirectory}/output/rename-header-multipart_1"
-BLAST_DIR="${workingDirectory}/output/blast_merge"
+BLAST_DIR_INPUT="${workingDirectory}/${output}/rename-header-multipart_1"
+BLAST_DIR="${workingDirectory}/${output}/blast_merge"
 
 # Ensure the folder exists
 if [ ! -d "$BLAST_DIR_INPUT" ]; then

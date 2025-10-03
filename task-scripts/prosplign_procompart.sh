@@ -22,4 +22,5 @@ PARAMS=$(get_params "prosplign-procompart")
 run_seda "${SEDA_OPERATION_NAME}" "${INPUT_FILE}" "${OUTPUT}" "${PARAMS}"
 
 mkdir -p ${workingDirectory}/${input}/lists
+# TODO: check if ${OUTPUT} is not empty so that it does not fail and guarantee that exists with 0 exit code always
 ls -1 ${OUTPUT}/* >> ${workingDirectory}/${input}/lists/remove-redundant_2.txt

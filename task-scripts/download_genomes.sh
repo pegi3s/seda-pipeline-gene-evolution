@@ -1,18 +1,18 @@
 #!/bin/bash
 
-if [ -d ${workingDirectory}/output/getorf_and_blast/${accession} ]; then
+if [ -d ${workingDirectory}/${output}/getorf_and_blast/${accession} ]; then
     echo "Accession ${accession} has been already processed."
     exit 0
 fi
 
 echo "Downloading genome for accession ${accession}"
 
-mkdir -p ${workingDirectory}/output/download-genomes/${accession}
+mkdir -p ${workingDirectory}/${output}/download-genomes/${accession}
 
 # Retry mechanism for download
 attempt=1
 max_retries=${max_download_retries:-3}  # Default to 3 retries if parameter not set
-zip_file="${workingDirectory}/output/download-genomes/${accession}/${accession}.zip"
+zip_file="${workingDirectory}/${output}/download-genomes/${accession}/${accession}.zip"
 
 while [ $attempt -le $max_retries ]; do
     echo "Download attempt $attempt of $max_retries for accession ${accession}"
@@ -40,8 +40,8 @@ while [ $attempt -le $max_retries ]; do
         fi
         if [ $attempt -eq $max_retries ]; then
             echo "ERROR: Failed to download ${accession}.zip after $max_retries attempts"
-            echo ${accession} >> ${workingDirectory}/output/download-genomes/failed_downloads.txt
-            rm -rf ${workingDirectory}/output/download-genomes/${accession}
+            echo ${accession} >> ${workingDirectory}/${output}/download-genomes/failed_downloads.txt
+            rm -rf ${workingDirectory}/${output}/download-genomes/${accession}
             exit 0
         fi
         attempt=$((attempt + 1))
@@ -51,13 +51,13 @@ while [ $attempt -le $max_retries ]; do
 done
 
 echo "Extracting ${accession}.zip"
-if unzip -q "$zip_file" -d ${workingDirectory}/output/download-genomes/${accession}/; then
+if unzip -q "$zip_file" -d ${workingDirectory}/${output}/download-genomes/${accession}/; then
     echo "Successfully extracted ${accession}.zip"
     rm "$zip_file"
     echo "Genome download and extraction completed successfully for accession ${accession}"
 
     # Extract filenames
-    for file in $(find ${workingDirectory}/output/download-genomes/${accession}/ -name "*fna"); do
+    for file in $(find ${workingDirectory}/${output}/download-genomes/${accession}/ -name "*fna"); do
         filename=$(basename "$file")
 
         # Extract the pattern (GCF/GCA followed by numbers)

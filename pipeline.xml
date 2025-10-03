@@ -46,36 +46,36 @@
 		 	getORF/BLAST or ProSplign-ProCompart
 		-->
 		<task id="pull_docker_images"
-			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
+			if="[ -f ${workingDirectory}/${input}/accessions_list.txt ]"
 			src="task-scripts/pull_docker_images.sh"
 		/>
 		<foreach id="download_genomes"
-			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
-			of="command" in="cat ${workingDirectory}/input/accessions_list.txt" as="accession" 
+			if="[ -f ${workingDirectory}/${input}/accessions_list.txt ]"
+			of="command" in="cat ${workingDirectory}/${input}/accessions_list.txt" as="accession" 
 			src="task-scripts/download_genomes.sh"
 			params="max_download_retries"
 			after="pull_docker_images"
 		/>
 		<foreach id="getorf_and_blast"
-			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
-			of="command" in="cat ${workingDirectory}/input/accessions_list.txt" as="accession" 
+			if="[ -f ${workingDirectory}/${input}/accessions_list.txt ]"
+			of="command" in="cat ${workingDirectory}/${input}/accessions_list.txt" as="accession" 
 			src="task-scripts/getorf_and_blast.sh"
 			after="*download_genomes"
 		/>
 		<foreach id="prosplign_procompart"
-			if="[ -f ${workingDirectory}/input/accessions_list.txt ] &amp;&amp; [ -v ${skip_prosplign_procompart} ]"
-			of="command" in="cat ${workingDirectory}/input/accessions_list.txt" as="accession" 
+			if="[ -f ${workingDirectory}/${input}/accessions_list.txt ] &amp;&amp; [ -v ${skip_prosplign_procompart} ]"
+			of="command" in="cat ${workingDirectory}/${input}/accessions_list.txt" as="accession" 
 			src="task-scripts/prosplign_procompart.sh"
 			after="*download_genomes"
 		/>
 		<foreach id="remove_genomes"
-			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
-			of="command" in="cat ${workingDirectory}/input/accessions_list.txt" as="accession" 
+			if="[ -f ${workingDirectory}/${input}/accessions_list.txt ]"
+			of="command" in="cat ${workingDirectory}/${input}/accessions_list.txt" as="accession" 
 			src="task-scripts/remove_genomes.sh"
 			after="*getorf_and_blast,*prosplign_procompart"
 		/>
 		<task id="check_failed_downloads"
-			if="[ -f ${workingDirectory}/input/accessions_list.txt ]"
+			if="[ -f ${workingDirectory}/${input}/accessions_list.txt ]"
 			after="remove_genomes"
 			src="task-scripts/check_failed_downloads.sh"
 		/>
@@ -85,19 +85,19 @@
 		 	getORF/BLAST or ProSplign-ProCompart
 		-->
 		<task id="extract_files"
-			if="[ ! -f ${workingDirectory}/input/accessions_list.txt ] &amp;&amp; [ -v ${skip_prosplign_procompart} ]"
+			if="[ ! -f ${workingDirectory}/${input}/accessions_list.txt ] &amp;&amp; [ -v ${skip_prosplign_procompart} ]"
 			src="task-scripts/extract_files.sh"
 		/>
 		<task id="getorf"
-			if="[ ! -f ${workingDirectory}/input/accessions_list.txt ] &amp;&amp; [ -v ${skip_prosplign_procompart} ]"
+			if="[ ! -f ${workingDirectory}/${input}/accessions_list.txt ] &amp;&amp; [ -v ${skip_prosplign_procompart} ]"
 			after="extract_files" params="batchSize_getorf"
 		/>
 		<task id="blast_1"
-			if="[ ! -f ${workingDirectory}/input/accessions_list.txt ] &amp;&amp; [ -v ${skip_prosplign_procompart} ]"
+			if="[ ! -f ${workingDirectory}/${input}/accessions_list.txt ] &amp;&amp; [ -v ${skip_prosplign_procompart} ]"
 			after="getorf" params="batchSize_blast_1"
 		/>
 		<task id="prosplign-procompart"
-			if="[ ! -f ${workingDirectory}/input/accessions_list.txt ]"
+			if="[ ! -f ${workingDirectory}/${input}/accessions_list.txt ]"
 			after="extract_files" params="batchSize_prosplign_procompart"
 		/>
 
