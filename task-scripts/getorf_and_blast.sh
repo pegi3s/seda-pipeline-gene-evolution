@@ -29,4 +29,7 @@ PARAMS=$(get_params "blast_1")
 run_seda "${SEDA_OPERATION_NAME}" "${INPUT_FILE}" "${OUTPUT}" "${PARAMS}"
 
 mkdir -p ${workingDirectory}/${input}/lists
-ls -1 ${OUTPUT}/* >> ${workingDirectory}/${input}/lists/remove-redundant_1.txt
+
+if [ -d "${OUTPUT}" ] && [ "$(ls -A "${OUTPUT}")" ]; then
+	ls -1 "${OUTPUT}"/* >> "${workingDirectory}/${input}/lists/remove-redundant_1.txt"
+fi
