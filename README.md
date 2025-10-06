@@ -18,6 +18,7 @@ A Docker image is available for this pipeline in [this Docker Hub repository](ht
     - [Partial execution between two tasks](#partial-execution-between-two-tasks)
   - [Skipping the ProSplign-ProCompart branch](#skipping-the-prosplign-procompart-branch)
   - [Controlling genome downloads](#controlling-genome-downloads)
+- [Troubleshooting](#troubleshooting)
 - [Publications](#publications)
 
 ## Pipeline overview
@@ -90,6 +91,14 @@ As explained previously, there are two ways of starting the pipeline:
 
 The `query` FASTA file is used for BLAST and the `query1` FASTA file is used for ProSplign-ProCompart. They are referenced in `params/blast_1.cliParams` and `params/prosplign-procompart.cliParams` respectively.
 
+Note that headers in the `query` must follow the format `>Gene Description`, for instance:
+```
+>FOXD2 XP_016006825_2
+>D1B XP_015992634_2
+>mesogenin1 XP_016009398_2
+```
+If not, the pipeline will fail to produce the correct outputs.
+
 ## Running the pipeline with sample data
 
 It is possible to test the pipeline using our sample data available [here](). Download this ZIP file and decompress it in your local file system. Then, to execute the pipeline using Docker, run the following command changing the `/path/to/seda-compi-gene-evolution/` to the path where you have the decompressed data.
@@ -131,6 +140,16 @@ If there are `X` accessions in the list, Compi will launch up to `X` instances o
 Then, the pipeline parameter `max_tasks` controls how many accessions can be downloaded and processed simultaneously by the subsequent tasks (`getorf_and_blast` and `prosplign_procompart`).
 
 If `max_tasks = 1` (default), all remaining tasks will be paused at `download_genomes`—before any download begins—until another genome finishes processing and is removed by `remove_genomes`. In this way, at most `max_tasks` genomes are stored at once, preventing excessive disk usage. To change it, set it explicitly in the `compi.params` file.
+
+## Troubleshooting
+
+| Problem | Possible cause |
+| ------- | -------------- |
+| `download_genomes` tasks do not all start | `--num-tasks` lower than number of accessions in `input/accessions_list.txt` |
+| `check_failed_downloads` reports failed accessions | Network/transient NCBI issue or accession deprecated |
+| `results/gene_sequences` contains a single FASTA file | The `query` file headers do not follow the requirements (`>Gene Description`) |
+| `results/gene_sequences` contains filenames that do not correspond to a gene name (e.g. `mesogenin1_GCA_004027595.1_DinBra_v1_BIUU_genomic.fna.sequences.fasta` instead of `mesogenin1.fasta`) | There was an error retrieving the taxonomic information at `rename-ncbi_1`, try re-running the pipeline from that point (with `--from rename-ncbi_1 --until label_reference`) after removing the affected output directories (`cd /path/to/working_dir && rm -rf output/rename-ncbi_1 output/replace_1 output/rename-header-multipart_1 output/blast_merge results`) |
+
 
 ## Publications
 
