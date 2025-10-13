@@ -118,13 +118,13 @@ The pipeline execution can be customized (e.g. setting the maximum number of par
 #### Run a single task with 2 maximum parallel executions
 
 ```bash
-./run.sh /path/to/working-directory/compi.params "--single-task extract-files --num-tasks 2"
+./run.sh /path/to/working-directory "--single-task extract-files --num-tasks 2"
 ```
 
 #### Partial execution between two tasks
 
 ```bash
-./run.sh /path/to/working-directory/compi.params "--from getorf --until blast_merge"
+./run.sh /path/to/working-directory "--from getorf --until blast_merge"
 ```
 
 ### Skipping the ProSplign-ProCompart branch
