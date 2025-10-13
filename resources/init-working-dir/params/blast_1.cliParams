@@ -1,0 +1,1 @@
+--query-file query --query-mode each --query-blast-type tblastn --evalue 0.05 --max-target-seqs 1

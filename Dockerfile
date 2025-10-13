@@ -6,6 +6,11 @@ COPY --from=base_pegi3s_utilities /opt/scripts/create_batches /opt/scripts/creat
 
 ADD image-files/compi.tar.gz /
 
+# Module: init-working-dir
+ADD resources/init-working-dir/init_working_dir.sh /usr/bin
+RUN chmod u+x /usr/bin/init_working_dir.sh
+ADD resources/init-working-dir /resources/init-working-dir
+
 RUN apt-get install -y zip
 
 ADD pipeline-runner/pipeline-runner.sh /opt/scripts/pipeline-runner.sh

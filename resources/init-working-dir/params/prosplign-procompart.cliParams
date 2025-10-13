@@ -1,0 +1,1 @@
+--max-target-seqs 1000 --query-file query1
