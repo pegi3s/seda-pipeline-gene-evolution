@@ -2,6 +2,8 @@
 
 WORKING_DIR=${1}
 COMPI_PARAMS=${2:-""}
+PIPELINE_VERSION=${PIPELINE_VERSION-1.0.0}
+PIPELINE_CONTAINER_NAME=seda-pipeline-gene-evolution
 
 function info() {
     tput setaf 2
@@ -20,7 +22,7 @@ if [ $# -ne 1 ] && [ $# -ne 2 ]; then
 	exit 1
 fi
 
-info "Running SEDA-Compi pipeline at ${WORKING_DIR}"
+info "Running SEDA-Compi v${PIPELINE_VERSION} pipeline at ${WORKING_DIR}"
 
 if [ ! -d "${WORKING_DIR}" ]; then
     show_error "[ERROR]: Working directory ${WORKING_DIR} does not exist"
@@ -72,7 +74,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp \
     -v "${WORKING_DIR}:${WORKING_DIR}" \
     -w "${WORKING_DIR}" \
     ${DOCKER_ENV_PARAMS} \
-    --name seda-compi-gene-evolution \
-    pegi3s/gene-evolution:0.2.0 \
+    --name ${PIPELINE_CONTAINER_NAME} \
+    pegi3s/gene-evolution:${PIPELINE_VERSION} \
         /compi run -p /pipeline.xml -o -r /pipeline-runner.xml ${COMPI_PARAMS} ${PIPELINE_PARAMS_FILE} -- \
             --workingDirectory ${WORKING_DIR}

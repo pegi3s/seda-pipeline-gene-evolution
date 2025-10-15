@@ -2,7 +2,7 @@
 
 <pipeline xmlns="http://www.sing-group.org/compi/pipeline-1.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<version>0.2.0</version>
+	<version>1.0.0</version>
 
 	<params>
 		<param name="workingDirectory" shortName="wd" global="true"></param>

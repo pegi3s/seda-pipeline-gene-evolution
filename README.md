@@ -1,8 +1,8 @@
-# SEDA-Compi `gene-evolution` [![license](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/sing-group/compi-rnaseq-pipeline) [![license](https://img.shields.io/badge/version-2.0.0-brightgreen)](https://github.com/sing-group/seda-compi-gene-evolution) [![dockerhub](https://img.shields.io/badge/hub-docker-blue)](https://hub.docker.com/r/pegi3s/seda-compi-gene-evolution) [![compihub](https://img.shields.io/badge/hub-compi-blue)](https://www.sing-group.org/compihub/explore/5d09fb2a1713f3002fde86e2)
+# SEDA-Compi `gene-evolution` [![license](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/pegi3s/seda-pipeline-gene-evolution) [![license](https://img.shields.io/badge/version-1.0.0-brightgreen)](https://github.com/pegi3s/seda-pipeline-gene-evolution) [![dockerhub](https://img.shields.io/badge/hub-docker-blue)](https://hub.docker.com/r/pegi3s/gene-evolution)
 
 A SEDA-Compi pipeline to study gene evolution using getorf/BLAST and ProSplign-ProCompart.
 
-A Docker image is available for this pipeline in [this Docker Hub repository](https://hub.docker.com/r/pegi3s/seda-compi-gene-evolution).
+A Docker image is available for this pipeline in [this Docker Hub repository](https://hub.docker.com/r/pegi3s/gene-evolution).
 
 ## Table of contents
 
@@ -55,7 +55,7 @@ docker run --rm \
     -v ${WORKING_DIRECTORY}:${WORKING_DIRECTORY} \
     -u "$(id -u)":"$(id -g)" \
     --entrypoint=/bin/bash \
-        pegi3s/gene-evolution:0.2.0 \
+        pegi3s/gene-evolution \
             init_working_dir.sh ${WORKING_DIRECTORY}
 ```
 
