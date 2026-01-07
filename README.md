@@ -153,4 +153,4 @@ If `max_tasks = 1` (default), all remaining tasks will be paused at `download_ge
 
 ## Publications
 
-- C. P. Vieira; H. López-Fernández; M. Reboiro-Jato; J. Vieira (2025) GULO evolution in bats: a genomic approach. 19th International Conference on Practical Applications of Computational Biology & Bioinformatics: PACBB 2025. Lille, France. 25 - June
+- C. P. Vieira; H. López-Fernández; M. Reboiro-Jato; J. Vieira (2025) <a href="https://doi.org/10.1007/978-3-032-10634-6_2">GULO evolution in bats: a genomic approach</a>. 19th International Conference on Practical Applications of Computational Biology & Bioinformatics: PACBB 2025. Lille, France. 25 - June
